@@ -207,17 +207,34 @@ select option{background:var(--bg2);color:var(--text)}
     <div class="section-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="11" x2="16" y2="11"/><line x1="8" y1="15" x2="12" y2="15"/></svg>Calculateur Import</div>
     <div class="card">
       <div style="display:flex;gap:10px">
-        <div class="form-group" style="flex:1"><label>Prix d'ench&egrave;re</label><input id="cPrice" type="number" value="3400" oninput="renderCalc()"></div>
-        <div class="form-group" style="flex:1"><label>Devise</label><select id="cCur" onchange="renderCalc()"><option value="yen">&yen; yen</option><option value="eur">&euro; euro</option></select></div>
+        <div class="form-group" style="flex:1"><label>Prix d'ench&egrave;re</label><input id="cPrice" type="number" value="100" oninput="renderCalc()"></div>
+        <div class="form-group" style="flex:1"><label>Devise de l'ench&egrave;re</label><select id="cCur" onchange="renderCalc()"><option value="yen">&yen; yen</option><option value="local" selected>ta devise</option></select></div>
       </div>
       <div style="display:flex;gap:10px">
-        <div class="form-group" style="flex:1"><label>Cat&eacute;gorie</label><select id="cCat" onchange="renderCalc()"><option value="0">Cam&eacute;ra (0%)</option><option value="0">T&eacute;l&eacute;phone (0%)</option><option value="0.045" selected>Walkman/audio (4,5%)</option></select></div>
-        <div class="form-group" style="flex:1"><label>Poids &rarr; EMS</label><select id="cW" onchange="renderCalc()"><option value="0.5">0,5 kg</option><option value="0.6">0,6 kg</option><option value="1.0" selected>1,0 kg</option><option value="1.5">1,5 kg</option><option value="2.0">2,0 kg</option><option value="2.5">2,5 kg</option><option value="3.0">3,0 kg</option><option value="4.0">4,0 kg</option><option value="5.0">5,0 kg</option></select></div>
+        <div class="form-group" style="flex:1"><label>Cat&eacute;gorie (douane %)</label><select id="cCat" onchange="renderCalc()"><option value="0">Cam&eacute;ra (0%)</option><option value="0">T&eacute;l&eacute;phone (0%)</option><option value="0.045" selected>Walkman/audio (4,5%)</option></select></div>
+        <div class="form-group" style="flex:1"><label>Poids &rarr; EMS</label><select id="cW" onchange="cShipAuto()"><option value="0.5">0,5 kg</option><option value="0.6">0,6 kg</option><option value="1.0" selected>1,0 kg</option><option value="1.5">1,5 kg</option><option value="2.0">2,0 kg</option><option value="2.5">2,5 kg</option><option value="3.0">3,0 kg</option><option value="4.0">4,0 kg</option><option value="5.0">5,0 kg</option></select></div>
       </div>
       <div style="display:flex;gap:10px">
-        <div class="form-group" style="flex:1"><label>Revente vis&eacute;e (&euro;)</label><input id="cResale" type="number" value="200" oninput="renderCalc()"></div>
-        <div class="form-group" style="flex:1"><label>Marge voulue (&euro;)</label><input id="cTarget" type="number" value="100" oninput="renderCalc()"></div>
+        <div class="form-group" style="flex:1"><label>Frais de port (EMS)</label><input id="cShip" type="number" oninput="renderCalc()"></div>
+        <div class="form-group" style="flex:1"><label>Revente vis&eacute;e</label><input id="cResale" type="number" value="200" oninput="renderCalc()"></div>
       </div>
+      <div style="display:flex;gap:10px">
+        <div class="form-group" style="flex:1"><label>Marge nette voulue</label><input id="cTarget" type="number" value="30" oninput="renderCalc()"></div>
+        <div class="form-group" style="flex:1"></div>
+      </div>
+      <details style="margin-top:4px">
+        <summary style="cursor:pointer;color:#8a82a0;font-size:13px;padding:6px 0">&#9881; Taux &amp; devise (avanc&eacute;)</summary>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px">
+          <div class="form-group" style="flex:1;min-width:100px"><label>Symbole devise</label><input id="kSym" oninput="saveCfg()"></div>
+          <div class="form-group" style="flex:1;min-width:100px"><label>Yen &rarr; devise</label><input id="kYen" type="number" step="0.0001" oninput="saveCfg()"></div>
+          <div class="form-group" style="flex:1;min-width:100px"><label>TVA %</label><input id="kVat" type="number" oninput="saveCfg()"></div>
+          <div class="form-group" style="flex:1;min-width:100px"><label>Frais marketplace %</label><input id="kFee" type="number" oninput="saveCfg()"></div>
+          <div class="form-group" style="flex:1;min-width:100px"><label>Frais service (Buyee)</label><input id="kBuyee" type="number" oninput="saveCfg()"></div>
+          <div class="form-group" style="flex:1;min-width:100px"><label>Frais d&eacute;douanement</label><input id="kClear" type="number" oninput="saveCfg()"></div>
+          <div class="form-group" style="flex:1;min-width:100px"><label>Seuil franchise douane</label><input id="kThr" type="number" oninput="saveCfg()"></div>
+        </div>
+        <p style="font-size:11px;color:#8a82a0;margin-top:4px">Valeurs par d&eacute;faut = France (&euro;, TVA 20%, EMS Japon, eBay 11%). Adapte-les &agrave; ton pays — ex. Danemark : DKK, TVA 25%, tes propres frais.</p>
+      </details>
     </div>
     <div class="card" id="cResult"></div>
   </div>
@@ -573,38 +590,45 @@ populatePlatformSelects();
 // === ONGLETS ===
 // === CALCULATEUR IMPORT (coeur du produit) ===
 const C_EMS=[[0.5,18],[0.6,20],[1.0,25],[1.5,32],[2.0,39],[2.5,45],[3.0,51],[4.0,63],[5.0,75]];
-const C_YEN=0.00575,C_BUYEE=7.5,C_CLEAR=10,C_VAT=0.20,C_EBAY=0.11,C_THR=150;
+const CALC_DEF={yen:0.00575,buyee:7.5,clear:10,vat:20,fee:11,thr:150};
 function cEms(w){for(const [k,e] of C_EMS){if(w<=k)return e}return 75}
+function calcSym(){return (loadObj('settings',{}).currency)||'€';}
+function getCfg(){return Object.assign({sym:calcSym()},CALC_DEF,loadObj('calcCfg',{}));}
+function saveCfg(){const g=id=>document.getElementById(id);const c={sym:g('kSym').value||'€',yen:parseFloat(g('kYen').value)||0,vat:parseFloat(g('kVat').value)||0,fee:parseFloat(g('kFee').value)||0,buyee:parseFloat(g('kBuyee').value)||0,clear:parseFloat(g('kClear').value)||0,thr:parseFloat(g('kThr').value)||0};saveObj('calcCfg',c);renderCalc();}
+function fillCalcCfg(){const c=getCfg();const g=id=>document.getElementById(id);g('kSym').value=c.sym;g('kYen').value=c.yen;g('kVat').value=c.vat;g('kFee').value=c.fee;g('kBuyee').value=c.buyee;g('kClear').value=c.clear;g('kThr').value=c.thr;if(!g('cShip').value)g('cShip').value=cEms(parseFloat(g('cW').value));}
+function cShipAuto(){document.getElementById('cShip').value=cEms(parseFloat(document.getElementById('cW').value));renderCalc();}
 function renderCalc(){
   const rate=parseFloat(document.getElementById('cCat').value)||0;
   const pr=parseFloat(document.getElementById('cPrice').value)||0;
-  const obj=document.getElementById('cCur').value==='yen'?pr*C_YEN:pr;
+  const c=getCfg(),S=c.sym,VAT=c.vat/100,EBAY=c.fee/100;
+  const obj=document.getElementById('cCur').value==='yen'?pr*c.yen:pr;
   const w=parseFloat(document.getElementById('cW').value);
+  let e=parseFloat(document.getElementById('cShip').value); if(isNaN(e))e=cEms(w);
   const resale=parseFloat(document.getElementById('cResale').value)||0;
   const target=parseFloat(document.getElementById('cTarget').value)||0;
-  const e=cEms(w);
-  const duty=obj>C_THR?rate*(obj+e):0;
-  const importVAT=C_VAT*(obj+e+duty);
-  const costHT=obj+e+duty+C_BUYEE+C_CLEAR;
-  const revHT=resale/(1+C_VAT), fee=C_EBAY*resale, collVAT=resale*(C_VAT/(1+C_VAT));
+  const duty=obj>c.thr?rate*(obj+e):0;
+  const importVAT=VAT*(obj+e+duty);
+  const costHT=obj+e+duty+c.buyee+c.clear;
+  const revHT=resale/(1+VAT), fee=EBAY*resale, collVAT=resale*(VAT/(1+VAT));
   const net=revHT-costHT-fee;
-  const base=revHT-fee-C_BUYEE-C_CLEAR-target;
-  let maxObj=base-e; if(maxObj>C_THR)maxObj=(base-rate*e)/(1+rate);
-  const maxYen=maxObj/C_YEN;
+  const base=revHT-fee-c.buyee-c.clear-target;
+  let maxObj=base-e; if(maxObj>c.thr)maxObj=(base-rate*e)/(1+rate);
+  const maxYen=maxObj/c.yen;
+  const m=n=>n.toFixed(0)+' '+S;
   const L=(a,b)=>`<div style="display:flex;justify-content:space-between;padding:6px 0;font-size:13px"><span style="color:#8a82a0">${a}</span><b>${b}</b></div>`;
   document.getElementById('cResult').innerHTML=
     `<div style="font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:#E8615A;margin-bottom:8px">Coût rendu réel</div>`+
-    L('Objet',obj.toFixed(0)+' €')+L('EMS ('+w+'kg)',e+' €')+
-    L('Douane '+(obj>C_THR?'('+(rate*100).toFixed(1)+'%)':'(0 — sous 150€)'),duty.toFixed(0)+' €')+
-    L('Buyee + dédouanement',(C_BUYEE+C_CLEAR).toFixed(0)+' €')+
-    L('TVA import '+importVAT.toFixed(0)+'€ (récupérée pro)','0 €')+
-    `<div style="text-align:center;margin:8px 0"><div style="font-size:11px;color:#8a82a0">COÛT RENDU (HT)</div><div style="font-size:26px;font-weight:900;color:#E8615A">${costHT.toFixed(0)} €</div></div>`+
+    L('Objet',m(obj))+L('EMS / port ('+w+'kg)',m(e))+
+    L('Douane '+(obj>c.thr?'('+(rate*100).toFixed(1)+'%)':'(0 — sous '+c.thr+S+')'),m(duty))+
+    L('Service + dédouanement',m(c.buyee+c.clear))+
+    L('TVA import '+importVAT.toFixed(0)+S+' (récupérée pro)',m(0))+
+    `<div style="text-align:center;margin:8px 0"><div style="font-size:11px;color:#8a82a0">COÛT RENDU (HT)</div><div style="font-size:26px;font-weight:900;color:#E8615A">${m(costHT)}</div></div>`+
     `<hr style="border:none;border-top:1px dashed #e7e2f0;margin:8px 0">`+
-    L('Revente '+resale+'€ → recette HT',revHT.toFixed(0)+' €')+
-    L('TVA 20% collectée','−'+collVAT.toFixed(0)+' €')+
-    L('Frais eBay 11%','−'+fee.toFixed(0)+' €')+
-    `<div style="text-align:center;margin:8px 0"><div style="font-size:11px;color:#8a82a0">MARGE NETTE (HT)</div><div style="font-size:26px;font-weight:900;color:${net>0?'#1FA6A0':'#E8615A'}">${net.toFixed(0)} €</div></div>`+
-    `<div style="background:linear-gradient(135deg,#E8615A,#b33);color:#fff;border-radius:12px;padding:14px;text-align:center;margin-top:10px"><div style="font-size:11px;opacity:.9">💡 PRIX D'ENCHÈRE MAX pour ${target}€ net</div><div style="font-size:24px;font-weight:900">${maxObj>0?Math.round(maxYen).toLocaleString('fr')+' ¥':'— impossible'}</div><div style="font-size:11px;opacity:.85">${maxObj>0?'≈ '+maxObj.toFixed(0)+' € · au-delà, le flip ne tient pas':'marge trop ambitieuse à ce prix'}</div></div>`;
+    L('Revente '+resale+S+' → recette HT',m(revHT))+
+    L('TVA '+c.vat+'% collectée','−'+m(collVAT))+
+    L('Frais marketplace '+c.fee+'%','−'+m(fee))+
+    `<div style="text-align:center;margin:8px 0"><div style="font-size:11px;color:#8a82a0">MARGE NETTE (HT)</div><div style="font-size:26px;font-weight:900;color:${net>0?'#1FA6A0':'#E8615A'}">${m(net)}</div></div>`+
+    `<div style="background:linear-gradient(135deg,#E8615A,#b33);color:#fff;border-radius:12px;padding:14px;text-align:center;margin-top:10px"><div style="font-size:11px;opacity:.9">💡 PRIX D'ENCHÈRE MAX pour ${target}${S} net</div><div style="font-size:24px;font-weight:900">${maxObj>0?Math.round(maxYen).toLocaleString('fr')+' ¥':'— impossible'}</div><div style="font-size:11px;opacity:.85">${maxObj>0?'≈ '+maxObj.toFixed(0)+' '+S+' · au-delà, le flip ne tient pas':'marge trop ambitieuse à ce prix'}</div></div>`;
 }
 function switchTab(name,btn){
   document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
@@ -613,7 +637,7 @@ function switchTab(name,btn){
   if(btn)btn.classList.add('active');
   document.querySelector('.main').scrollTop=0;
   if(name==='dashboard')refreshDashboard();
-  if(name==='calc')renderCalc();
+  if(name==='calc'){fillCalcCfg();renderCalc();}
   if(name==='inventory')renderInventory();
   if(name==='list')populateListSelect();
   if(name==='sales'){renderSales();populateSaleSelect()}
