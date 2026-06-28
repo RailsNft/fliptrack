@@ -1,0 +1,1095 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>FlipTrack FR — Suivi Revente & Seconde Main</title>
+<meta name="description" content="Suis tes ventes de seconde main. Inventaire, ventes, analyse des profits pour revendeurs.">
+<meta name="theme-color" content="#1a1a2e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="FlipTrack FR">
+<link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiRmxpcFRyYWNrIEZSIiwic2hvcnRfbmFtZSI6IkZsaXBUcmFjayBGUiIsInN0YXJ0X3VybCI6Ii4iLCJkaXNwbGF5Ijoic3RhbmRhbG9uZSIsImJhY2tncm91bmRfY29sb3IiOiIjMWExYTJlIiwidGhlbWVfY29sb3IiOiIjMWExYTJlIn0=">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+--bg:#1a1a2e;--bg2:#16213e;--bg3:#0f3460;--card:#1e2746;--card2:#243054;
+--green:#4ADE80;--green2:#22c55e;--orange:#FF8C42;--red:#ef4444;--yellow:#fbbf24;
+--text:#f1f5f9;--text2:#94a3b8;--text3:#64748b;--border:#2d3a5c;
+--radius:14px;--radius-sm:10px;
+}
+html,body{height:100%;overflow:hidden}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);display:flex;flex-direction:column}
+h1,h2,h3,h4,.tab-label{font-family:'Space Grotesk',sans-serif}
+
+/* Scrollbar */
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+
+/* Header */
+.header{padding:16px 20px 12px;background:linear-gradient(135deg,var(--bg),var(--bg2));border-bottom:1px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:space-between}
+.header h1{font-size:22px;font-weight:700;background:linear-gradient(135deg,var(--green),var(--orange));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.header .tagline{font-size:11px;color:var(--text3);margin-top:2px}
+.header-right{display:flex;gap:8px;align-items:center}
+.header-right .profit-badge{background:rgba(74,222,128,.12);color:var(--green);padding:4px 12px;border-radius:20px;font-size:13px;font-weight:600;font-family:'Space Grotesk',sans-serif}
+
+/* Main content */
+.main{flex:1;overflow-y:auto;padding:16px 16px 100px;-webkit-overflow-scrolling:touch}
+
+/* Tab bar */
+.tab-bar{position:fixed;bottom:0;left:0;right:0;background:var(--bg2);border-top:1px solid var(--border);display:flex;padding:6px 4px;padding-bottom:max(6px,env(safe-area-inset-bottom));z-index:100;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.tab-bar::-webkit-scrollbar{display:none}
+.tab-btn{flex:1;min-width:60px;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 4px;border:none;background:none;color:var(--text3);cursor:pointer;border-radius:10px;transition:.2s;font-size:9px;font-family:'DM Sans',sans-serif}
+.tab-btn svg{width:20px;height:20px}
+.tab-btn.active{color:var(--green);background:rgba(74,222,128,.08)}
+
+/* Cards */
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:12px}
+.card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.card-title{font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:600}
+.card-subtitle{font-size:12px;color:var(--text2)}
+
+/* Stat grid */
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px}
+.stat-card.wide{grid-column:span 2}
+.stat-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.stat-value{font-family:'Space Grotesk',sans-serif;font-size:24px;font-weight:700}
+.stat-value.green{color:var(--green)}
+.stat-value.orange{color:var(--orange)}
+.stat-value.red{color:var(--red)}
+.stat-sub{font-size:11px;color:var(--text3);margin-top:2px}
+
+/* Forms */
+.form-group{margin-bottom:14px}
+.form-group label{display:block;font-size:12px;color:var(--text2);margin-bottom:5px;font-weight:500}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+input,select,textarea{width:100%;padding:10px 12px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;transition:.2s}
+input:focus,select:focus,textarea:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(74,222,128,.1)}
+select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%2394a3b8' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center}
+textarea{resize:vertical;min-height:60px}
+
+/* Buttons */
+.btn{padding:12px 20px;border:none;border-radius:var(--radius-sm);font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:.2s;display:inline-flex;align-items:center;gap:6px;justify-content:center;width:100%}
+.btn-primary{background:linear-gradient(135deg,var(--green2),var(--green));color:#0a0a0a}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 4px 20px rgba(74,222,128,.3)}
+.btn-orange{background:linear-gradient(135deg,var(--orange),#ff6b2b);color:#fff}
+.btn-secondary{background:var(--card2);color:var(--text);border:1px solid var(--border)}
+.btn-danger{background:rgba(239,68,68,.15);color:var(--red);border:1px solid rgba(239,68,68,.2)}
+.btn-sm{padding:8px 14px;font-size:12px}
+
+/* List items */
+.list-item{display:flex;align-items:center;gap:12px;padding:12px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm);margin-bottom:8px;cursor:pointer;transition:.2s}
+.list-item:hover{border-color:var(--green);background:var(--card2)}
+.list-item .icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.list-item .info{flex:1;min-width:0}
+.list-item .info .name{font-weight:500;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.list-item .info .meta{font-size:11px;color:var(--text3);margin-top:2px}
+.list-item .amount{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:14px;text-align:right;flex-shrink:0}
+
+/* Status badges */
+.badge{display:inline-block;padding:3px 8px;border-radius:6px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.3px}
+.badge-green{background:rgba(74,222,128,.15);color:var(--green)}
+.badge-orange{background:rgba(255,140,66,.15);color:var(--orange)}
+.badge-gray{background:rgba(148,163,184,.15);color:var(--text2)}
+.badge-red{background:rgba(239,68,68,.15);color:var(--red)}
+
+/* Chart */
+.chart-container{position:relative;height:200px;margin-top:12px}
+.chart-bar-wrap{display:flex;align-items:flex-end;gap:4px;height:170px;padding-bottom:24px;position:relative}
+.chart-bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px}
+.chart-bar{width:100%;border-radius:4px 4px 0 0;transition:.3s;min-height:2px;position:relative}
+.chart-bar:hover{opacity:.8}
+.chart-bar-label{font-size:9px;color:var(--text3);position:absolute;bottom:0;transform:translateY(100%);white-space:nowrap}
+.chart-bar-val{font-size:9px;color:var(--text2);font-weight:600}
+
+/* Section */
+.section-title{font-family:'Space Grotesk',sans-serif;font-size:17px;font-weight:600;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.section-title svg{width:20px;height:20px;color:var(--green)}
+
+/* Tabs content */
+.tab-content{display:none}
+.tab-content.active{display:block}
+
+/* Modal */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:200;align-items:flex-end;justify-content:center;backdrop-filter:blur(4px)}
+.modal-overlay.show{display:flex}
+.modal{background:var(--bg2);border:1px solid var(--border);border-radius:20px 20px 0 0;padding:24px 20px;width:100%;max-width:500px;max-height:85vh;overflow-y:auto}
+.modal-handle{width:40px;height:4px;background:var(--border);border-radius:4px;margin:0 auto 16px}
+.modal h3{font-family:'Space Grotesk',sans-serif;font-size:18px;margin-bottom:16px}
+
+/* Empty state */
+.empty-state{text-align:center;padding:40px 20px;color:var(--text3)}
+.empty-state .icon{font-size:48px;margin-bottom:12px}
+.empty-state p{font-size:14px;margin-bottom:16px}
+
+/* Filter bar */
+.filter-bar{display:flex;gap:6px;margin-bottom:14px;overflow-x:auto;padding-bottom:4px}
+.filter-bar::-webkit-scrollbar{display:none}
+.filter-chip{padding:6px 14px;border-radius:20px;font-size:12px;font-weight:500;border:1px solid var(--border);background:var(--card);color:var(--text2);cursor:pointer;white-space:nowrap;transition:.2s}
+.filter-chip.active{background:rgba(74,222,128,.12);color:var(--green);border-color:rgba(74,222,128,.3)}
+
+/* Analytics bars */
+.analytics-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.analytics-row .label{font-size:12px;color:var(--text2);min-width:80px}
+.analytics-row .bar-track{flex:1;height:24px;background:var(--bg);border-radius:6px;overflow:hidden;position:relative}
+.analytics-row .bar-fill{height:100%;border-radius:6px;transition:.5s;display:flex;align-items:center;padding-left:8px;font-size:11px;font-weight:600;color:#0a0a0a;min-width:fit-content}
+.analytics-row .val{font-size:13px;font-weight:600;min-width:60px;text-align:right;font-family:'Space Grotesk',sans-serif}
+
+/* Keyframes */
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.tab-content.active{animation:fadeIn .3s ease}
+
+/* Delete */
+.delete-row{display:flex;justify-content:flex-end;margin-top:12px}
+
+/* PWA install */
+.install-banner{display:none;padding:10px 16px;background:linear-gradient(135deg,rgba(74,222,128,.1),rgba(255,140,66,.1));border:1px solid var(--border);border-radius:var(--radius);margin-bottom:12px;cursor:pointer;text-align:center;font-size:13px;color:var(--text2)}
+.install-banner strong{color:var(--green)}
+
+/* Dark select options */
+select option{background:var(--bg2);color:var(--text)}
+
+/* Tax banner */
+.tax-banner{padding:12px 16px;background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.25);border-radius:var(--radius-sm);margin-bottom:14px;font-size:12px;color:var(--yellow);line-height:1.5}
+.tax-banner strong{color:var(--yellow)}
+
+@media(min-width:500px){
+  .main{padding:20px 24px 100px}
+  .stat-grid{grid-template-columns:repeat(3,1fr)}
+  .stat-card.wide{grid-column:span 1}
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <h1>FlipTrack FR</h1>
+    <div class="tagline">Suivi Revente & Seconde Main</div>
+  </div>
+  <div class="header-right">
+    <div class="profit-badge" id="headerProfit">0,00 &euro;</div>
+  </div>
+</div>
+
+<div class="main" id="mainContent">
+  <!-- TABLEAU DE BORD -->
+  <div class="tab-content active" id="tab-dashboard">
+    <div class="install-banner" id="installBanner" onclick="installPWA()">
+      <strong>Installe FlipTrack FR</strong> pour un acc&egrave;s rapide depuis ton &eacute;cran d'accueil
+    </div>
+    <div class="tax-banner">
+      <strong>Fiscalit&eacute; FR :</strong> Au-del&agrave; de 2 000 &euro;/an ou 30 ventes, tu dois d&eacute;clarer tes revenus. Pense &agrave; garder tes justificatifs !
+    </div>
+    <div class="stat-grid">
+      <div class="stat-card"><div class="stat-label">Profit Total</div><div class="stat-value green" id="dTotalProfit">0 &euro;</div><div class="stat-sub">depuis le d&eacute;but</div></div>
+      <div class="stat-card"><div class="stat-label">En Stock</div><div class="stat-value" id="dInStock">0</div><div class="stat-sub">articles</div></div>
+      <div class="stat-card"><div class="stat-label">Vendus</div><div class="stat-value orange" id="dSold">0</div><div class="stat-sub">total</div></div>
+      <div class="stat-card"><div class="stat-label">Marge Moy.</div><div class="stat-value" id="dMargin">0%</div><div class="stat-sub">profit/co&ucirc;t</div></div>
+      <div class="stat-card"><div class="stat-label">Meilleur Flip</div><div class="stat-value green" id="dBestFlip">0 &euro;</div><div class="stat-sub" id="dBestFlipName">-</div></div>
+      <div class="stat-card"><div class="stat-label">Ce Mois</div><div class="stat-value orange" id="dMonthRev">0 &euro;</div><div class="stat-sub">chiffre d'affaires</div></div>
+    </div>
+    <div class="card">
+      <div class="card-header"><span class="card-title">Chiffre d'affaires mensuel</span></div>
+      <div class="chart-container"><div class="chart-bar-wrap" id="revenueChart"></div></div>
+    </div>
+    <div class="card">
+      <div class="card-header"><span class="card-title">Activit&eacute; r&eacute;cente</span></div>
+      <div id="recentActivity"><div class="empty-state"><div class="icon">&#128176;</div><p>Lance-toi ! Ajoute ton premier article.</p></div></div>
+    </div>
+  </div>
+
+  <!-- CALCULATEUR IMPORT -->
+  <div class="tab-content" id="tab-calc">
+    <div class="section-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="11" x2="16" y2="11"/><line x1="8" y1="15" x2="12" y2="15"/></svg>Calculateur Import</div>
+    <div class="card">
+      <div style="display:flex;gap:10px">
+        <div class="form-group" style="flex:1"><label>Prix d'ench&egrave;re</label><input id="cPrice" type="number" value="3400" oninput="renderCalc()"></div>
+        <div class="form-group" style="flex:1"><label>Devise</label><select id="cCur" onchange="renderCalc()"><option value="yen">&yen; yen</option><option value="eur">&euro; euro</option></select></div>
+      </div>
+      <div style="display:flex;gap:10px">
+        <div class="form-group" style="flex:1"><label>Cat&eacute;gorie</label><select id="cCat" onchange="renderCalc()"><option value="0">Cam&eacute;ra (0%)</option><option value="0">T&eacute;l&eacute;phone (0%)</option><option value="0.045" selected>Walkman/audio (4,5%)</option></select></div>
+        <div class="form-group" style="flex:1"><label>Poids &rarr; EMS</label><select id="cW" onchange="renderCalc()"><option value="0.5">0,5 kg</option><option value="0.6">0,6 kg</option><option value="1.0" selected>1,0 kg</option><option value="1.5">1,5 kg</option><option value="2.0">2,0 kg</option><option value="2.5">2,5 kg</option><option value="3.0">3,0 kg</option><option value="4.0">4,0 kg</option><option value="5.0">5,0 kg</option></select></div>
+      </div>
+      <div style="display:flex;gap:10px">
+        <div class="form-group" style="flex:1"><label>Revente vis&eacute;e (&euro;)</label><input id="cResale" type="number" value="200" oninput="renderCalc()"></div>
+        <div class="form-group" style="flex:1"><label>Marge voulue (&euro;)</label><input id="cTarget" type="number" value="100" oninput="renderCalc()"></div>
+      </div>
+    </div>
+    <div class="card" id="cResult"></div>
+  </div>
+
+  <!-- INVENTAIRE -->
+  <div class="tab-content" id="tab-inventory">
+    <div class="section-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>Inventaire</div>
+    <div class="filter-bar" id="invFilters">
+      <div class="filter-chip active" data-f="all" onclick="filterInv('all',this)">Tout</div>
+      <div class="filter-chip" data-f="unlisted" onclick="filterInv('unlisted',this)">Non list&eacute;</div>
+      <div class="filter-chip" data-f="listed" onclick="filterInv('listed',this)">En vente</div>
+      <div class="filter-chip" data-f="sold" onclick="filterInv('sold',this)">Vendu</div>
+    </div>
+    <button class="btn btn-primary" style="margin-bottom:14px" onclick="openModal('addItem')">+ Ajouter un article</button>
+    <div id="inventoryList"></div>
+  </div>
+
+  <!-- METTRE EN VENTE -->
+  <div class="tab-content" id="tab-list">
+    <div class="section-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>Mettre en vente</div>
+    <div class="form-group">
+      <label>Article &agrave; mettre en vente</label>
+      <select id="listItemSelect"><option value="">-- Choisis un article non list&eacute; --</option></select>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Plateforme</label><select id="listPlatform" class="platform-select"></select></div>
+      <div class="form-group"><label>Prix de vente (&euro;)</label><input type="number" id="listPrice" step="0.01" placeholder="0,00"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Frais d'envoi (&euro;)</label><input type="number" id="listShipping" step="0.01" placeholder="0,00"></div>
+      <div class="form-group"><label>Date de mise en vente</label><input type="date" id="listDate"></div>
+    </div>
+    <button class="btn btn-orange" onclick="listItem()">Mettre en vente</button>
+  </div>
+
+  <!-- VENTES -->
+  <div class="tab-content" id="tab-sales">
+    <div class="section-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1v22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Ventes</div>
+    <button class="btn btn-primary" style="margin-bottom:14px" onclick="openModal('logSale')">+ Enregistrer une vente</button>
+    <div class="stat-grid" style="margin-bottom:14px">
+      <div class="stat-card"><div class="stat-label">CA Total</div><div class="stat-value green" id="sTotalRev">0 &euro;</div></div>
+      <div class="stat-card"><div class="stat-label">Profit Net</div><div class="stat-value orange" id="sTotalProfit">0 &euro;</div></div>
+    </div>
+    <div id="salesList"></div>
+  </div>
+
+  <!-- ANALYTIQUES -->
+  <div class="tab-content" id="tab-analytics">
+    <div class="section-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>Analytiques</div>
+    <div class="card"><div class="card-header"><span class="card-title">Profit par cat&eacute;gorie</span></div><div id="anaCategory"></div></div>
+    <div class="card"><div class="card-header"><span class="card-title">Profit par plateforme</span></div><div id="anaPlatform"></div></div>
+    <div class="card"><div class="card-header"><span class="card-title">Taux de vente</span></div><div id="anaSellThrough" class="stat-value green" style="font-size:32px;text-align:center;padding:20px">0%</div><div class="stat-sub" style="text-align:center">articles vendus / total articles</div></div>
+    <div class="card"><div class="card-header"><span class="card-title">Top ROI</span></div><div id="anaROI"></div></div>
+  </div>
+
+  <!-- SOURCING / CHINE -->
+  <div class="tab-content" id="tab-sourcing">
+    <div class="section-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Sorties Chine</div>
+    <button class="btn btn-primary" style="margin-bottom:14px" onclick="openModal('addTrip')">+ Ajouter une sortie</button>
+    <div class="stat-grid" style="margin-bottom:14px">
+      <div class="stat-card"><div class="stat-label">Nb Sorties</div><div class="stat-value" id="srcTrips">0</div></div>
+      <div class="stat-card"><div class="stat-label">Total D&eacute;pens&eacute;</div><div class="stat-value orange" id="srcSpent">0 &euro;</div></div>
+      <div class="stat-card"><div class="stat-label">Moy. / Sortie</div><div class="stat-value" id="srcAvg">0 &euro;</div></div>
+      <div class="stat-card"><div class="stat-label">Articles Trouv&eacute;s</div><div class="stat-value green" id="srcItems">0</div></div>
+    </div>
+    <div id="sourcingList"></div>
+  </div>
+
+  <!-- DEPENSES -->
+  <div class="tab-content" id="tab-expenses">
+    <div class="section-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>D&eacute;penses</div>
+    <button class="btn btn-primary" style="margin-bottom:14px" onclick="openModal('addExpense')">+ Ajouter une d&eacute;pense</button>
+    <div class="stat-grid" style="margin-bottom:14px">
+      <div class="stat-card"><div class="stat-label">Ce Mois</div><div class="stat-value red" id="expMonth">0 &euro;</div></div>
+      <div class="stat-card"><div class="stat-label">Total</div><div class="stat-value orange" id="expTotal">0 &euro;</div></div>
+    </div>
+    <div id="expensesList"></div>
+  </div>
+
+  <!-- REGLAGES -->
+  <div class="tab-content" id="tab-settings">
+    <div class="section-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>R&eacute;glages</div>
+    <div class="card">
+      <div class="card-title" style="margin-bottom:14px">Par d&eacute;faut</div>
+      <div class="form-group"><label>Plateforme par d&eacute;faut</label><select id="settPlatform" class="platform-select"></select></div>
+      <div class="form-group"><label>Symbole Devise</label><input type="text" id="settCurrency" value="&euro;" maxlength="3"></div>
+      <button class="btn btn-secondary btn-sm" onclick="saveSettings()" style="margin-bottom:10px">Enregistrer</button>
+    </div>
+    <div class="card">
+      <div class="card-title" style="margin-bottom:14px">G&eacute;rer les Plateformes</div>
+      <div id="platformList"></div>
+      <div class="form-row" style="margin-top:10px">
+        <div class="form-group"><input type="text" id="newPlatformName" placeholder="Nom de la plateforme..."></div>
+        <div class="form-group"><button class="btn btn-sm" onclick="addPlatform()">+ Ajouter</button></div>
+      </div>
+      <p style="font-size:11px;color:#999;margin-top:8px">Ajoutez ou supprimez des plateformes de vente. Les changements s'appliquent partout.</p>
+    </div>
+    <div class="card">
+      <div class="card-title" style="margin-bottom:14px">Frais Plateforme (%)</div>
+      <div id="feePresetsContainer"></div>
+      <div style="font-size:11px;color:var(--text3);margin-bottom:10px">Vinted : 0% vendeur (frais acheteur). LeBonCoin : ~4% avec Paiement S&eacute;curis&eacute;. eBay : ~12%.</div>
+      <button class="btn btn-secondary btn-sm" onclick="saveFees()">Enregistrer les frais</button>
+    </div>
+    <div class="card">
+      <div class="card-title" style="margin-bottom:14px">Donn&eacute;es</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn btn-secondary btn-sm" style="flex:1" onclick="exportData()">Exporter JSON</button>
+        <button class="btn btn-secondary btn-sm" style="flex:1" onclick="document.getElementById('importFile').click()">Importer JSON</button>
+        <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
+      </div>
+      <div style="margin-top:12px"><button class="btn btn-danger btn-sm" onclick="if(confirm('Supprimer TOUTES les donn\u00e9es ? Cette action est irr\u00e9versible.')){localStorage.clear();location.reload()}">Tout r&eacute;initialiser</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- Barre d'onglets -->
+<nav class="tab-bar">
+  <button class="tab-btn active" onclick="switchTab('dashboard',this)" title="Tableau de bord">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+    <span>Accueil</span>
+  </button>
+  <button class="tab-btn" onclick="switchTab('calc',this)" title="Calculateur Import">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="11" x2="16" y2="11"/><line x1="8" y1="15" x2="12" y2="15"/></svg>
+    <span>Calcul</span>
+  </button>
+  <button class="tab-btn" onclick="switchTab('inventory',this)" title="Inventaire">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+    <span>Stock</span>
+  </button>
+  <button class="tab-btn" onclick="switchTab('list',this)" title="Mettre en vente">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+    <span>Lister</span>
+  </button>
+  <button class="tab-btn" onclick="switchTab('sales',this)" title="Ventes">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1v22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+    <span>Ventes</span>
+  </button>
+  <button class="tab-btn" onclick="switchTab('analytics',this)" title="Analytiques">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>
+    <span>Stats</span>
+  </button>
+  <button class="tab-btn" onclick="switchTab('sourcing',this)" title="Sorties Chine">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+    <span>Chine</span>
+  </button>
+  <button class="tab-btn" onclick="switchTab('expenses',this)" title="D&eacute;penses">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+    <span>Frais</span>
+  </button>
+  <button class="tab-btn" onclick="switchTab('settings',this)" title="R&eacute;glages">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+    <span>R&eacute;glages</span>
+  </button>
+</nav>
+
+<!-- MODALS -->
+<div class="modal-overlay" id="modal-addItem">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <h3>Ajouter un article</h3>
+    <div class="form-group"><label>Nom de l'article *</label><input type="text" id="itemName" placeholder="Veste Levi's vintage"></div>
+    <div class="form-row">
+      <div class="form-group"><label>Cat&eacute;gorie</label><select id="itemCategory"><option>V&ecirc;tements</option><option>Chaussures</option><option>Sacs</option><option>&Eacute;lectronique</option><option>Vintage</option><option>D&eacute;co</option><option>Livres</option><option>Jouets</option></select></div>
+      <div class="form-group"><label>Prix d'achat (&euro;) *</label><input type="number" id="itemBuyPrice" step="0.01" placeholder="0,00"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Source</label><select id="itemSource"><option>Friperie</option><option>Brocante</option><option>Vide-grenier</option><option>Emma&uuml;s</option><option>Vide-dressing</option><option>Braderie</option><option>En ligne</option></select></div>
+      <div class="form-group"><label>&Eacute;tat</label><select id="itemCondition"><option>Neuf avec &eacute;tiquette</option><option>Comme neuf</option><option>Bon &eacute;tat</option><option>Correct</option><option>Us&eacute;</option></select></div>
+    </div>
+    <div class="form-group"><label>Date d'achat</label><input type="date" id="itemDate"></div>
+    <div class="form-group"><label>Notes</label><textarea id="itemNotes" placeholder="D&eacute;tails, d&eacute;fauts, mesures..."></textarea></div>
+    <div style="display:flex;gap:10px">
+      <button class="btn btn-secondary" onclick="closeModal('addItem')">Annuler</button>
+      <button class="btn btn-primary" onclick="addItem()">Ajouter</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-logSale">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <h3>Enregistrer une vente</h3>
+    <div class="form-group"><label>Article vendu *</label><select id="saleItemSelect"><option value="">-- Choisis un article en vente --</option></select></div>
+    <div class="form-row">
+      <div class="form-group"><label>Prix de vente (&euro;) *</label><input type="number" id="salePrice" step="0.01" placeholder="0,00"></div>
+      <div class="form-group"><label>Plateforme</label><select id="salePlatform" class="platform-select"></select></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Frais plateforme (&euro;)</label><input type="number" id="saleFee" step="0.01" placeholder="auto"></div>
+      <div class="form-group"><label>Frais d'envoi (&euro;)</label><input type="number" id="saleShipping" step="0.01" placeholder="0,00"></div>
+    </div>
+    <div class="form-group"><label>Date de vente</label><input type="date" id="saleDate"></div>
+    <div class="card" style="background:var(--bg);margin-top:4px">
+      <div style="display:flex;justify-content:space-between"><span class="stat-label">Profit net estim&eacute;</span><span class="stat-value green" id="saleNetPreview" style="font-size:20px">0,00 &euro;</span></div>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:14px">
+      <button class="btn btn-secondary" onclick="closeModal('logSale')">Annuler</button>
+      <button class="btn btn-primary" onclick="logSale()">Valider la vente</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-addTrip">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <h3>Ajouter une sortie chine</h3>
+    <div class="form-group"><label>Lieu *</label><input type="text" id="tripLocation" placeholder="Brocante de Vanves, Emma&uuml;s Bobigny..."></div>
+    <div class="form-row">
+      <div class="form-group"><label>Date</label><input type="date" id="tripDate"></div>
+      <div class="form-group"><label>Total d&eacute;pens&eacute; (&euro;)</label><input type="number" id="tripSpent" step="0.01" placeholder="0,00"></div>
+    </div>
+    <div class="form-group"><label>Articles trouv&eacute;s</label><input type="number" id="tripItems" placeholder="0"></div>
+    <div class="form-group"><label>Meilleures trouvailles / Notes</label><textarea id="tripNotes" placeholder="Trouv&eacute; une veste Levi's trucker vintage !"></textarea></div>
+    <div style="display:flex;gap:10px">
+      <button class="btn btn-secondary" onclick="closeModal('addTrip')">Annuler</button>
+      <button class="btn btn-primary" onclick="addTrip()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-addExpense">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <h3>Ajouter une d&eacute;pense</h3>
+    <div class="form-group"><label>Description *</label><input type="text" id="expDesc" placeholder="Emballage, essence, abonnement..."></div>
+    <div class="form-row">
+      <div class="form-group"><label>Cat&eacute;gorie</label><select id="expCategory"><option>Emballage / Envoi</option><option>Essence / Transport</option><option>Stockage</option><option>Abonnements</option><option>Mat&eacute;riel photo</option><option>&Eacute;quipement</option><option>Autre</option></select></div>
+      <div class="form-group"><label>Montant (&euro;) *</label><input type="number" id="expAmount" step="0.01" placeholder="0,00"></div>
+    </div>
+    <div class="form-group"><label>Date</label><input type="date" id="expDate"></div>
+    <div style="display:flex;gap:10px">
+      <button class="btn btn-secondary" onclick="closeModal('addExpense')">Annuler</button>
+      <button class="btn btn-primary" onclick="addExpense()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-relist">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <h3>↗ Changer de plateforme</h3>
+    <div class="form-group" style="margin-bottom:10px"><label>Nouvelle plateforme</label><select id="relistPlatform" class="platform-select"></select></div>
+    <div class="form-group" style="margin-bottom:14px"><label>Nouveau prix (laisse vide pour garder)</label><input type="number" id="relistPrice" placeholder=""></div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <button class="btn btn-secondary" onclick="closeModal('relist')">Annuler</button>
+      <button class="btn btn-primary" onclick="confirmRelist()">Déplacer l'article</button>
+    </div>
+  </div>
+</div>
+<div class="modal-overlay" id="modal-viewItem">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <h3 id="viewItemTitle">D&eacute;tails de l'article</h3>
+    <div id="viewItemBody"></div>
+    <div style="display:flex;gap:10px;margin-top:14px;flex-wrap:wrap">
+      <button class="btn btn-secondary" onclick="closeModal('viewItem')">Fermer</button>
+      <button class="btn btn-sm" id="viewItemRelist" onclick="relistItem()" style="display:none">↗ Changer de plateforme</button>
+      <button class="btn btn-danger btn-sm" id="viewItemDelete" onclick="deleteCurrentItem()">Supprimer</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// === COUCHE DONNEES ===
+const P='ft_fr_';
+function load(k){try{return JSON.parse(localStorage.getItem(P+k))||[]}catch{return[]}}
+function save(k,v){localStorage.setItem(P+k,JSON.stringify(v))}
+function loadObj(k,d){try{return JSON.parse(localStorage.getItem(P+k))||d}catch{return d}}
+function saveObj(k,v){localStorage.setItem(P+k,JSON.stringify(v))}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,7)}
+function today(){return new Date().toISOString().slice(0,10)}
+function money(n){const s=loadObj('settings',{}).currency||'\u20ac';return Math.abs(n).toFixed(2).replace('.',',')+'\u00a0'+s}
+function pct(n){return n.toFixed(1)+'%'}
+
+// Donnees principales
+let items=load('items');      // {id,name,category,buyPrice,source,dateBought,condition,notes,status,platform,listPrice,listShipping,listDate,sellPrice,salePlatform,saleFee,saleShipping,saleDate,saleNet}
+let trips=load('trips');      // {id,location,date,spent,itemsFound,notes}
+let expenses=load('expenses');// {id,desc,category,amount,date}
+const DEFAULT_PLATFORMS=['Vinted','LeBonCoin','eBay','Vestiaire Collective','Selency','Depop','Facebook Marketplace'];
+let platforms=loadObj('platforms',DEFAULT_PLATFORMS);
+let fees=loadObj('fees',{Vinted:0,LeBonCoin:4,'Vestiaire Collective':15,eBay:12,Selency:15,Depop:10,'Facebook Marketplace':0});
+let settings=loadObj('settings',{platform:'Vinted',currency:'\u20ac'});
+
+function populatePlatformSelects(){
+  document.querySelectorAll('.platform-select').forEach(sel=>{
+    const cur=sel.value;
+    sel.innerHTML='';
+    platforms.forEach(p=>{
+      const o=document.createElement('option');
+      o.value=p;o.textContent=p;
+      sel.appendChild(o);
+    });
+    if(cur&&platforms.includes(cur))sel.value=cur;
+  });
+}
+function renderPlatformFees(){
+  const c=document.getElementById('feePresetsContainer');
+  if(!c)return;
+  c.innerHTML='';
+  for(let i=0;i<platforms.length;i+=2){
+    const row=document.createElement('div');
+    row.className='form-row';
+    row.innerHTML=`<div class="form-group"><label>${platforms[i]}</label><input type="number" id="fee_${platforms[i].replace(/\s/g,'_')}" step="0.1" value="${fees[platforms[i]]||0}"></div>`;
+    if(platforms[i+1]){
+      row.innerHTML+=`<div class="form-group"><label>${platforms[i+1]}</label><input type="number" id="fee_${platforms[i+1].replace(/\s/g,'_')}" step="0.1" value="${fees[platforms[i+1]]||0}"></div>`;
+    }else{
+      row.innerHTML+=`<div class="form-group"></div>`;
+    }
+    c.appendChild(row);
+  }
+}
+function renderPlatformManager(){
+  const c=document.getElementById('platformList');
+  if(!c)return;
+  c.innerHTML='';
+  platforms.forEach((p,i)=>{
+    const d=document.createElement('div');
+    d.style.cssText='display:flex;align-items:center;gap:8px;margin-bottom:6px;';
+    d.innerHTML=`<span style="flex:1;font-size:14px">${p}</span><button class="btn btn-secondary btn-sm" onclick="removePlatform(${i})" style="padding:4px 12px;font-size:15px;line-height:1;color:#fff;background:#c00;border:none;border-radius:6px;cursor:pointer;width:auto;flex:0 0 auto">\u2715</button>`;
+    c.appendChild(d);
+  });
+}
+function addPlatform(){
+  const input=document.getElementById('newPlatformName');
+  const name=input.value.trim();
+  if(!name)return;
+  if(platforms.includes(name)){alert('Plateforme deja existante');return;}
+  platforms.push(name);
+  fees[name]=fees[name]||0;
+  saveObj('platforms',platforms);
+  saveObj('fees',fees);
+  input.value='';
+  populatePlatformSelects();
+  renderPlatformFees();
+  renderPlatformManager();
+}
+function removePlatform(i){
+  if(platforms.length<=1){alert('Il faut au moins une plateforme');return;}
+  const name=platforms[i];
+  if(!confirm('Supprimer '+name+' ?'))return;
+  platforms.splice(i,1);
+  delete fees[name];
+  saveObj('platforms',platforms);
+  saveObj('fees',fees);
+  populatePlatformSelects();
+  renderPlatformFees();
+  renderPlatformManager();
+}
+
+// === INIT PLATFORMS ===
+populatePlatformSelects();
+
+// === ONGLETS ===
+// === CALCULATEUR IMPORT (coeur du produit) ===
+const C_EMS=[[0.5,18],[0.6,20],[1.0,25],[1.5,32],[2.0,39],[2.5,45],[3.0,51],[4.0,63],[5.0,75]];
+const C_YEN=0.00575,C_BUYEE=7.5,C_CLEAR=10,C_VAT=0.20,C_EBAY=0.11,C_THR=150;
+function cEms(w){for(const [k,e] of C_EMS){if(w<=k)return e}return 75}
+function renderCalc(){
+  const rate=parseFloat(document.getElementById('cCat').value)||0;
+  const pr=parseFloat(document.getElementById('cPrice').value)||0;
+  const obj=document.getElementById('cCur').value==='yen'?pr*C_YEN:pr;
+  const w=parseFloat(document.getElementById('cW').value);
+  const resale=parseFloat(document.getElementById('cResale').value)||0;
+  const target=parseFloat(document.getElementById('cTarget').value)||0;
+  const e=cEms(w);
+  const duty=obj>C_THR?rate*(obj+e):0;
+  const importVAT=C_VAT*(obj+e+duty);
+  const costHT=obj+e+duty+C_BUYEE+C_CLEAR;
+  const revHT=resale/(1+C_VAT), fee=C_EBAY*resale, collVAT=resale*(C_VAT/(1+C_VAT));
+  const net=revHT-costHT-fee;
+  const base=revHT-fee-C_BUYEE-C_CLEAR-target;
+  let maxObj=base-e; if(maxObj>C_THR)maxObj=(base-rate*e)/(1+rate);
+  const maxYen=maxObj/C_YEN;
+  const L=(a,b)=>`<div style="display:flex;justify-content:space-between;padding:6px 0;font-size:13px"><span style="color:#8a82a0">${a}</span><b>${b}</b></div>`;
+  document.getElementById('cResult').innerHTML=
+    `<div style="font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:#E8615A;margin-bottom:8px">Coût rendu réel</div>`+
+    L('Objet',obj.toFixed(0)+' €')+L('EMS ('+w+'kg)',e+' €')+
+    L('Douane '+(obj>C_THR?'('+(rate*100).toFixed(1)+'%)':'(0 — sous 150€)'),duty.toFixed(0)+' €')+
+    L('Buyee + dédouanement',(C_BUYEE+C_CLEAR).toFixed(0)+' €')+
+    L('TVA import '+importVAT.toFixed(0)+'€ (récupérée pro)','0 €')+
+    `<div style="text-align:center;margin:8px 0"><div style="font-size:11px;color:#8a82a0">COÛT RENDU (HT)</div><div style="font-size:26px;font-weight:900;color:#E8615A">${costHT.toFixed(0)} €</div></div>`+
+    `<hr style="border:none;border-top:1px dashed #e7e2f0;margin:8px 0">`+
+    L('Revente '+resale+'€ → recette HT',revHT.toFixed(0)+' €')+
+    L('TVA 20% collectée','−'+collVAT.toFixed(0)+' €')+
+    L('Frais eBay 11%','−'+fee.toFixed(0)+' €')+
+    `<div style="text-align:center;margin:8px 0"><div style="font-size:11px;color:#8a82a0">MARGE NETTE (HT)</div><div style="font-size:26px;font-weight:900;color:${net>0?'#1FA6A0':'#E8615A'}">${net.toFixed(0)} €</div></div>`+
+    `<div style="background:linear-gradient(135deg,#E8615A,#b33);color:#fff;border-radius:12px;padding:14px;text-align:center;margin-top:10px"><div style="font-size:11px;opacity:.9">💡 PRIX D'ENCHÈRE MAX pour ${target}€ net</div><div style="font-size:24px;font-weight:900">${maxObj>0?Math.round(maxYen).toLocaleString('fr')+' ¥':'— impossible'}</div><div style="font-size:11px;opacity:.85">${maxObj>0?'≈ '+maxObj.toFixed(0)+' € · au-delà, le flip ne tient pas':'marge trop ambitieuse à ce prix'}</div></div>`;
+}
+function switchTab(name,btn){
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  if(btn)btn.classList.add('active');
+  document.querySelector('.main').scrollTop=0;
+  if(name==='dashboard')refreshDashboard();
+  if(name==='calc')renderCalc();
+  if(name==='inventory')renderInventory();
+  if(name==='list')populateListSelect();
+  if(name==='sales'){renderSales();populateSaleSelect()}
+  if(name==='analytics')renderAnalytics();
+  if(name==='sourcing')renderSourcing();
+  if(name==='expenses')renderExpenses();
+  if(name==='settings')loadSettings();
+}
+
+// === MODALS ===
+function openModal(name){document.getElementById('modal-'+name).classList.add('show')}
+function closeModal(name){document.getElementById('modal-'+name).classList.remove('show')}
+document.querySelectorAll('.modal-overlay').forEach(m=>{
+  m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('show')});
+});
+
+// === ICONES CATEGORIES ===
+const catIcons={'V\u00eatements':'&#128085;','\u00c9lectronique':'&#128187;','Vintage':'&#127942;','Chaussures':'&#128094;','Sacs':'&#128092;','D\u00e9co':'&#127968;','Jouets':'&#129528;','Livres':'&#128218;'};
+const catColors={'V\u00eatements':'var(--green)','\u00c9lectronique':'#60a5fa','Vintage':'var(--orange)','Chaussures':'#a78bfa','Sacs':'#f472b6','D\u00e9co':'#fbbf24','Jouets':'#34d399','Livres':'#fb923c'};
+
+// === INVENTAIRE ===
+let invFilter='all';
+function filterInv(f,el){
+  invFilter=f;
+  document.querySelectorAll('#invFilters .filter-chip').forEach(c=>c.classList.remove('active'));
+  if(el)el.classList.add('active');
+  renderInventory();
+}
+function renderInventory(){
+  const list=document.getElementById('inventoryList');
+  let filtered=items;
+  if(invFilter!=='all')filtered=items.filter(i=>i.status===invFilter);
+  if(!filtered.length){list.innerHTML='<div class="empty-state"><div class="icon">&#128230;</div><p>Aucun article. Ajoute tes trouvailles !</p></div>';return}
+  list.innerHTML=filtered.map(i=>{
+    const badge=i.status==='sold'?'badge-green':i.status==='listed'?'badge-orange':'badge-gray';
+    const statusLabel=i.status==='sold'?'vendu':i.status==='listed'?'en vente':'non list\u00e9';
+    const col=catColors[i.category]||'var(--green)';
+    return`<div class="list-item" onclick="viewItem('${i.id}')">
+      <div class="icon" style="background:${col}22;color:${col}">${catIcons[i.category]||'&#128230;'}</div>
+      <div class="info"><div class="name">${esc(i.name)}</div><div class="meta">${i.category} &middot; ${i.source} &middot; <span class="badge ${badge}">${statusLabel}</span></div></div>
+      <div class="amount">${money(i.buyPrice)}</div>
+    </div>`}).join('');
+}
+function addItem(){
+  const name=document.getElementById('itemName').value.trim();
+  const price=parseFloat(document.getElementById('itemBuyPrice').value);
+  if(!name||isNaN(price)){alert('Le nom et le prix d\'achat sont obligatoires.');return}
+  items.push({
+    id:uid(),name,
+    category:document.getElementById('itemCategory').value,
+    buyPrice:price,
+    source:document.getElementById('itemSource').value,
+    dateBought:document.getElementById('itemDate').value||today(),
+    condition:document.getElementById('itemCondition').value,
+    notes:document.getElementById('itemNotes').value,
+    status:'unlisted'
+  });
+  save('items',items);
+  closeModal('addItem');
+  ['itemName','itemBuyPrice','itemNotes'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('itemDate').value='';
+  renderInventory();
+}
+let currentViewId=null;
+function viewItem(id){
+  const i=items.find(x=>x.id===id);if(!i)return;
+  currentViewId=id;
+  document.getElementById('viewItemTitle').textContent=i.name;
+  const statusLabel=i.status==='sold'?'vendu':i.status==='listed'?'en vente':'non list\u00e9';
+  let h=`<div style="display:grid;gap:8px">`;
+  h+=`<div><span class="stat-label">Cat\u00e9gorie :</span> ${i.category}</div>`;
+  h+=`<div><span class="stat-label">Prix d'achat :</span> <strong>${money(i.buyPrice)}</strong></div>`;
+  h+=`<div><span class="stat-label">Source :</span> ${i.source}</div>`;
+  h+=`<div><span class="stat-label">\u00c9tat :</span> ${i.condition||'-'}</div>`;
+  h+=`<div><span class="stat-label">Date d'achat :</span> ${i.dateBought||'-'}</div>`;
+  h+=`<div><span class="stat-label">Statut :</span> <span class="badge ${i.status==='sold'?'badge-green':i.status==='listed'?'badge-orange':'badge-gray'}">${statusLabel}</span></div>`;
+  if(i.status==='listed'||i.status==='sold'){
+    h+=`<div><span class="stat-label">Plateforme :</span> ${i.platform||i.salePlatform||'-'}</div>`;
+    h+=`<div><span class="stat-label">Prix de vente :</span> ${i.listPrice?money(i.listPrice):'-'}</div>`;
+  }
+  if(i.status==='sold'){
+    h+=`<div><span class="stat-label">Vendu \u00e0 :</span> <strong style="color:var(--green)">${money(i.sellPrice)}</strong></div>`;
+    h+=`<div><span class="stat-label">Profit net :</span> <strong style="color:${i.saleNet>=0?'var(--green)':'var(--red)'}">${i.saleNet>=0?'+':''}${money(i.saleNet)}</strong></div>`;
+  }
+  if(i.notes)h+=`<div><span class="stat-label">Notes :</span> ${esc(i.notes)}</div>`;
+  h+=`</div>`;
+  document.getElementById('viewItemBody').innerHTML=h;
+  document.getElementById('viewItemRelist').style.display=(i.status==='listed')?'inline-block':'none';
+  openModal('viewItem');
+}
+function relistItem(){
+  const i=items.find(x=>x.id===currentViewId);if(!i)return;
+  if(i.status!=='listed'){alert('Seuls les articles en vente (non vendus) peuvent être déplacés.');return;}
+  const sel=document.getElementById('relistPlatform');
+  sel.innerHTML=platforms.map(p=>`<option${p===i.platform?' selected':''}>${esc(p)}</option>`).join('');
+  const pr=document.getElementById('relistPrice');pr.value='';pr.placeholder='Garder '+money(i.listPrice||0);
+  closeModal('viewItem');openModal('relist');
+}
+function confirmRelist(){
+  const i=items.find(x=>x.id===currentViewId);if(!i)return;
+  i.platform=document.getElementById('relistPlatform').value;
+  const npr=document.getElementById('relistPrice').value;
+  if(npr!==''&&!isNaN(parseFloat(String(npr).replace(',','.'))))i.listPrice=parseFloat(String(npr).replace(',','.'));
+  i.listDate=today();
+  save('items',items);
+  closeModal('relist');renderInventory();
+}
+function deleteCurrentItem(){
+  if(!currentViewId)return;
+  if(!confirm('Supprimer cet article ?'))return;
+  items=items.filter(i=>i.id!==currentViewId);
+  save('items',items);currentViewId=null;
+  closeModal('viewItem');renderInventory();refreshDashboard();
+}
+
+// === METTRE EN VENTE ===
+function populateListSelect(){
+  const sel=document.getElementById('listItemSelect');
+  const unlisted=items.filter(i=>i.status==='unlisted');
+  sel.innerHTML='<option value="">-- Choisis un article non list\u00e9 --</option>'+unlisted.map(i=>`<option value="${i.id}">${esc(i.name)} (${money(i.buyPrice)})</option>`).join('');
+  document.getElementById('listDate').value=today();
+  const dp=settings.platform||'Vinted';
+  document.getElementById('listPlatform').value=dp;
+}
+function listItem(){
+  const id=document.getElementById('listItemSelect').value;
+  const price=parseFloat(document.getElementById('listPrice').value);
+  if(!id){alert('S\u00e9lectionne un article d\'abord.');return}
+  if(isNaN(price)){alert('Entre un prix de vente.');return}
+  const i=items.find(x=>x.id===id);if(!i)return;
+  i.status='listed';
+  i.platform=document.getElementById('listPlatform').value;
+  i.listPrice=price;
+  i.listShipping=parseFloat(document.getElementById('listShipping').value)||0;
+  i.listDate=document.getElementById('listDate').value||today();
+  save('items',items);
+  document.getElementById('listPrice').value='';
+  document.getElementById('listShipping').value='';
+  populateListSelect();
+  alert(i.name+' est maintenant en vente sur '+i.platform+' !');
+}
+
+// === VENTES ===
+function populateSaleSelect(){
+  const sel=document.getElementById('saleItemSelect');
+  const listed=items.filter(i=>i.status==='listed');
+  sel.innerHTML='<option value="">-- Choisis un article en vente --</option>'+listed.map(i=>`<option value="${i.id}">${esc(i.name)} (${i.platform} @ ${money(i.listPrice)})</option>`).join('');
+  document.getElementById('saleDate').value=today();
+}
+// Auto-calc frais
+document.getElementById('saleItemSelect').addEventListener('change',function(){
+  const i=items.find(x=>x.id===this.value);
+  if(i){
+    document.getElementById('salePlatform').value=i.platform||settings.platform;
+    calcSalePreview();
+  }
+});
+['salePrice','saleFee','saleShipping','salePlatform'].forEach(id=>{
+  document.getElementById(id).addEventListener('input',calcSalePreview);
+  document.getElementById(id).addEventListener('change',calcSalePreview);
+});
+function feeKey(platform){return platform.replace(/\s+/g,'')}
+function calcSalePreview(){
+  const itemId=document.getElementById('saleItemSelect').value;
+  const i=items.find(x=>x.id===itemId);
+  const sp=parseFloat(document.getElementById('salePrice').value)||0;
+  const plat=document.getElementById('salePlatform').value;
+  let fee=parseFloat(document.getElementById('saleFee').value);
+  if(isNaN(fee)){fee=sp*(fees[plat]||fees[feeKey(plat)]||0)/100}
+  const ship=parseFloat(document.getElementById('saleShipping').value)||0;
+  const cost=i?i.buyPrice:0;
+  const net=sp-fee-ship-cost;
+  document.getElementById('saleNetPreview').textContent=(net>=0?'+':'')+money(net);
+  document.getElementById('saleNetPreview').style.color=net>=0?'var(--green)':'var(--red)';
+}
+function logSale(){
+  const id=document.getElementById('saleItemSelect').value;
+  const sp=parseFloat(document.getElementById('salePrice').value);
+  if(!id){alert('S\u00e9lectionne un article en vente.');return}
+  if(isNaN(sp)){alert('Entre le prix de vente.');return}
+  const i=items.find(x=>x.id===id);if(!i)return;
+  const plat=document.getElementById('salePlatform').value;
+  let fee=parseFloat(document.getElementById('saleFee').value);
+  if(isNaN(fee))fee=sp*(fees[plat]||fees[feeKey(plat)]||0)/100;
+  const ship=parseFloat(document.getElementById('saleShipping').value)||0;
+  i.status='sold';
+  i.sellPrice=sp;
+  i.salePlatform=plat;
+  i.saleFee=Math.round(fee*100)/100;
+  i.saleShipping=ship;
+  i.saleDate=document.getElementById('saleDate').value||today();
+  i.saleNet=Math.round((sp-fee-ship-i.buyPrice)*100)/100;
+  save('items',items);
+  closeModal('logSale');
+  ['salePrice','saleFee','saleShipping'].forEach(x=>document.getElementById(x).value='');
+  renderSales();populateSaleSelect();refreshDashboard();
+}
+function renderSales(){
+  const sold=items.filter(i=>i.status==='sold').sort((a,b)=>(b.saleDate||'').localeCompare(a.saleDate||''));
+  const totalRev=sold.reduce((s,i)=>s+i.sellPrice,0);
+  const totalProfit=sold.reduce((s,i)=>s+(i.saleNet||0),0);
+  document.getElementById('sTotalRev').textContent=money(totalRev);
+  document.getElementById('sTotalProfit').textContent=money(totalProfit);
+  document.getElementById('sTotalProfit').style.color=totalProfit>=0?'var(--green)':'var(--red)';
+  const list=document.getElementById('salesList');
+  if(!sold.length){list.innerHTML='<div class="empty-state"><div class="icon">&#128176;</div><p>Aucune vente pour l\'instant. Continue !</p></div>';return}
+  list.innerHTML=sold.map(i=>`<div class="list-item" onclick="viewItem('${i.id}')">
+    <div class="icon" style="background:rgba(74,222,128,.12);color:var(--green)">&#128176;</div>
+    <div class="info"><div class="name">${esc(i.name)}</div><div class="meta">${i.salePlatform} &middot; ${i.saleDate||'-'}</div></div>
+    <div class="amount" style="color:${(i.saleNet||0)>=0?'var(--green)':'var(--red)'}">${(i.saleNet||0)>=0?'+':''}${money(i.saleNet||0)}</div>
+  </div>`).join('');
+}
+
+// === TABLEAU DE BORD ===
+function refreshDashboard(){
+  const sold=items.filter(i=>i.status==='sold');
+  const inStock=items.filter(i=>i.status!=='sold');
+  const totalProfit=sold.reduce((s,i)=>s+(i.saleNet||0),0);
+  const totalCost=sold.reduce((s,i)=>s+i.buyPrice,0);
+  const avgMargin=totalCost>0?(totalProfit/totalCost*100):0;
+  let bestFlip=0,bestName='-';
+  sold.forEach(i=>{if((i.saleNet||0)>bestFlip){bestFlip=i.saleNet;bestName=i.name}});
+  const now=new Date();const ym=now.getFullYear()+'-'+(''+(now.getMonth()+1)).padStart(2,'0');
+  const monthRev=sold.filter(i=>(i.saleDate||'').startsWith(ym)).reduce((s,i)=>s+i.sellPrice,0);
+
+  document.getElementById('dTotalProfit').textContent=(totalProfit>=0?'':'-')+money(totalProfit);
+  document.getElementById('dInStock').textContent=inStock.length;
+  document.getElementById('dSold').textContent=sold.length;
+  document.getElementById('dMargin').textContent=pct(avgMargin);
+  document.getElementById('dMargin').className='stat-value '+(avgMargin>=0?'green':'red');
+  document.getElementById('dBestFlip').textContent='+'+money(bestFlip);
+  document.getElementById('dBestFlipName').textContent=bestName;
+  document.getElementById('dMonthRev').textContent=money(monthRev);
+  document.getElementById('headerProfit').textContent=(totalProfit>=0?'+':'-')+money(totalProfit);
+
+  // Graphique CA - 6 derniers mois
+  renderRevenueChart();
+  // Activite recente
+  renderRecent();
+}
+function renderRevenueChart(){
+  const wrap=document.getElementById('revenueChart');
+  const sold=items.filter(i=>i.status==='sold');
+  const months=[];
+  const now=new Date();
+  for(let m=5;m>=0;m--){
+    const d=new Date(now.getFullYear(),now.getMonth()-m,1);
+    const key=d.getFullYear()+'-'+(''+(d.getMonth()+1)).padStart(2,'0');
+    const label=['Jan','F\u00e9v','Mar','Avr','Mai','Juin','Juil','Ao\u00fbt','Sep','Oct','Nov','D\u00e9c'][d.getMonth()];
+    const rev=sold.filter(i=>(i.saleDate||'').startsWith(key)).reduce((s,i)=>s+i.sellPrice,0);
+    months.push({label,rev,key});
+  }
+  const max=Math.max(...months.map(m=>m.rev),1);
+  wrap.innerHTML=months.map(m=>{
+    const h=Math.max((m.rev/max)*150,2);
+    return`<div class="chart-bar-col">
+      <div class="chart-bar-val">${m.rev>0?money(m.rev):''}</div>
+      <div class="chart-bar" style="height:${h}px;background:linear-gradient(180deg,var(--green),var(--green2))"></div>
+      <div class="chart-bar-label">${m.label}</div>
+    </div>`}).join('');
+}
+function renderRecent(){
+  const all=[];
+  items.filter(i=>i.status==='sold').forEach(i=>all.push({date:i.saleDate,text:'Vendu '+i.name,sub:i.salePlatform+' &middot; +'+money(i.saleNet||0),color:'var(--green)',icon:'&#128176;'}));
+  items.filter(i=>i.status==='listed').forEach(i=>all.push({date:i.listDate,text:'En vente '+i.name,sub:i.platform+' @ '+money(i.listPrice),color:'var(--orange)',icon:'&#128200;'}));
+  all.sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+  const recent=all.slice(0,8);
+  const el=document.getElementById('recentActivity');
+  if(!recent.length){el.innerHTML='<div class="empty-state"><div class="icon">&#128176;</div><p>Lance-toi ! Ajoute ton premier article.</p></div>';return}
+  el.innerHTML=recent.map(r=>`<div class="list-item" style="cursor:default">
+    <div class="icon" style="background:${r.color}22;color:${r.color}">${r.icon}</div>
+    <div class="info"><div class="name">${esc(r.text)}</div><div class="meta">${r.sub} &middot; ${r.date||''}</div></div>
+  </div>`).join('');
+}
+
+// === ANALYTIQUES ===
+function renderAnalytics(){
+  const sold=items.filter(i=>i.status==='sold');
+  // Profit par categorie
+  const byCat={};
+  sold.forEach(i=>{byCat[i.category]=(byCat[i.category]||0)+(i.saleNet||0)});
+  renderBars('anaCategory',byCat,'var(--green)');
+  // Profit par plateforme
+  const byPlat={};
+  sold.forEach(i=>{byPlat[i.salePlatform]=(byPlat[i.salePlatform]||0)+(i.saleNet||0)});
+  renderBars('anaPlatform',byPlat,'var(--orange)');
+  // Taux de vente
+  const total=items.length;
+  const rate=total>0?(sold.length/total*100):0;
+  document.getElementById('anaSellThrough').textContent=pct(rate);
+  // Top ROI
+  const roi=sold.filter(i=>i.buyPrice>0).map(i=>({name:i.name,roi:((i.saleNet||0)/i.buyPrice*100)})).sort((a,b)=>b.roi-a.roi).slice(0,5);
+  const el=document.getElementById('anaROI');
+  if(!roi.length){el.innerHTML='<div style="color:var(--text3);font-size:13px;text-align:center;padding:12px">Aucune vente pour l\'instant</div>';return}
+  el.innerHTML=roi.map(r=>`<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border)">
+    <span style="font-size:13px">${esc(r.name)}</span>
+    <span style="font-weight:600;color:${r.roi>=0?'var(--green)':'var(--red)'}; font-family:'Space Grotesk',sans-serif">${r.roi>=0?'+':''}${pct(r.roi)} ROI</span>
+  </div>`).join('');
+}
+function renderBars(elId,data,color){
+  const el=document.getElementById(elId);
+  const entries=Object.entries(data).sort((a,b)=>b[1]-a[1]);
+  if(!entries.length){el.innerHTML='<div style="color:var(--text3);font-size:13px;text-align:center;padding:12px">Pas encore de donn\u00e9es</div>';return}
+  const max=Math.max(...entries.map(e=>Math.abs(e[1])),1);
+  el.innerHTML=entries.map(([k,v])=>`<div class="analytics-row">
+    <div class="label">${k}</div>
+    <div class="bar-track"><div class="bar-fill" style="width:${Math.abs(v)/max*100}%;background:${v>=0?color:'var(--red)'}">&nbsp;</div></div>
+    <div class="val" style="color:${v>=0?color:'var(--red)'}">${v>=0?'+':''}${money(v)}</div>
+  </div>`).join('');
+}
+
+// === SORTIES CHINE ===
+function renderSourcing(){
+  const totalSpent=trips.reduce((s,t)=>s+(t.spent||0),0);
+  const totalItems=trips.reduce((s,t)=>s+(t.itemsFound||0),0);
+  document.getElementById('srcTrips').textContent=trips.length;
+  document.getElementById('srcSpent').textContent=money(totalSpent);
+  document.getElementById('srcAvg').textContent=trips.length?money(totalSpent/trips.length):'0 \u20ac';
+  document.getElementById('srcItems').textContent=totalItems;
+  const list=document.getElementById('sourcingList');
+  if(!trips.length){list.innerHTML='<div class="empty-state"><div class="icon">&#128205;</div><p>Note tes sorties chine pour suivre tes d\u00e9penses.</p></div>';return}
+  list.innerHTML=trips.sort((a,b)=>(b.date||'').localeCompare(a.date||'')).map(t=>`<div class="list-item" style="cursor:default">
+    <div class="icon" style="background:rgba(255,140,66,.12);color:var(--orange)">&#128205;</div>
+    <div class="info"><div class="name">${esc(t.location)}</div><div class="meta">${t.date||'-'} &middot; ${t.itemsFound||0} articles${t.notes?' &middot; '+esc(t.notes.slice(0,40)):''}</div></div>
+    <div class="amount" style="color:var(--orange)">${money(t.spent||0)}</div>
+  </div>`).join('');
+}
+function addTrip(){
+  const loc=document.getElementById('tripLocation').value.trim();
+  if(!loc){alert('Entre un lieu.');return}
+  trips.push({
+    id:uid(),location:loc,
+    date:document.getElementById('tripDate').value||today(),
+    spent:parseFloat(document.getElementById('tripSpent').value)||0,
+    itemsFound:parseInt(document.getElementById('tripItems').value)||0,
+    notes:document.getElementById('tripNotes').value
+  });
+  save('trips',trips);
+  closeModal('addTrip');
+  ['tripLocation','tripSpent','tripItems','tripNotes'].forEach(x=>document.getElementById(x).value='');
+  document.getElementById('tripDate').value='';
+  renderSourcing();
+}
+
+// === DEPENSES ===
+function renderExpenses(){
+  const now=new Date();const ym=now.getFullYear()+'-'+(''+(now.getMonth()+1)).padStart(2,'0');
+  const monthTotal=expenses.filter(e=>(e.date||'').startsWith(ym)).reduce((s,e)=>s+(e.amount||0),0);
+  const allTotal=expenses.reduce((s,e)=>s+(e.amount||0),0);
+  document.getElementById('expMonth').textContent=money(monthTotal);
+  document.getElementById('expTotal').textContent=money(allTotal);
+  const list=document.getElementById('expensesList');
+  if(!expenses.length){list.innerHTML='<div class="empty-state"><div class="icon">&#128179;</div><p>Suis tes frais professionnels ici.</p></div>';return}
+  list.innerHTML=expenses.sort((a,b)=>(b.date||'').localeCompare(a.date||'')).map(e=>`<div class="list-item" style="cursor:default">
+    <div class="icon" style="background:rgba(239,68,68,.12);color:var(--red)">&#128179;</div>
+    <div class="info"><div class="name">${esc(e.desc)}</div><div class="meta">${e.category} &middot; ${e.date||'-'}</div></div>
+    <div class="amount" style="color:var(--red)">-${money(e.amount)}</div>
+  </div>`).join('');
+}
+function addExpense(){
+  const desc=document.getElementById('expDesc').value.trim();
+  const amt=parseFloat(document.getElementById('expAmount').value);
+  if(!desc||isNaN(amt)){alert('Description et montant obligatoires.');return}
+  expenses.push({
+    id:uid(),desc,
+    category:document.getElementById('expCategory').value,
+    amount:amt,
+    date:document.getElementById('expDate').value||today()
+  });
+  save('expenses',expenses);
+  closeModal('addExpense');
+  ['expDesc','expAmount'].forEach(x=>document.getElementById(x).value='');
+  document.getElementById('expDate').value='';
+  renderExpenses();
+}
+
+// === REGLAGES ===
+function loadSettings(){
+  populatePlatformSelects();
+  document.getElementById('settPlatform').value=settings.platform||platforms[0];
+  document.getElementById('settCurrency').value=settings.currency||'\u20ac';
+  renderPlatformFees();
+  renderPlatformManager();
+}
+function saveSettings(){
+  settings.platform=document.getElementById('settPlatform').value;
+  settings.currency=document.getElementById('settCurrency').value;
+  saveObj('settings',settings);
+  alert('R\u00e9glages enregistr\u00e9s !');
+}
+function saveFees(){
+  platforms.forEach(p=>{
+    const el=document.getElementById('fee_'+p.replace(/\s/g,'_'));
+    if(el)fees[p]=parseFloat(el.value)||0;
+  });
+  saveObj('fees',fees);
+  alert('Frais enregistr\u00e9s !');
+}
+function exportData(){
+  const data={items,trips,expenses,fees,settings,exported:new Date().toISOString()};
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download='fliptrack_fr_backup_'+today()+'.json';a.click();
+}
+function importData(e){
+  const file=e.target.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=function(ev){
+    try{
+      const data=JSON.parse(ev.target.result);
+      if(data.items)items=data.items;
+      if(data.trips)trips=data.trips;
+      if(data.expenses)expenses=data.expenses;
+      if(data.fees)fees=data.fees;
+      if(data.settings)settings=data.settings;
+      save('items',items);save('trips',trips);save('expenses',expenses);
+      saveObj('fees',fees);saveObj('settings',settings);
+      alert('Donn\u00e9es import\u00e9es avec succ\u00e8s !');
+      refreshDashboard();
+    }catch{alert('Fichier invalide.')}
+  };
+  reader.readAsText(file);
+  e.target.value='';
+}
+
+// === UTILS ===
+function esc(s){if(!s)return'';const d=document.createElement('div');d.textContent=s;return d.innerHTML}
+
+// === PWA INSTALL ===
+let deferredPrompt=null;
+window.addEventListener('beforeinstallprompt',e=>{
+  e.preventDefault();deferredPrompt=e;
+  document.getElementById('installBanner').style.display='block';
+});
+function installPWA(){
+  if(!deferredPrompt)return;
+  deferredPrompt.prompt();
+  deferredPrompt.userChoice.then(()=>{deferredPrompt=null;document.getElementById('installBanner').style.display='none'});
+}
+
+// === INIT ===
+refreshDashboard();
+</script>
+<div id="installPrompt" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:9999;align-items:center;justify-content:center"><div style="background:#fff;border-radius:20px;padding:30px 24px;max-width:340px;margin:20px;text-align:center;font-family:sans-serif"><h2 style="font-size:1.2rem;color:#333;margin-bottom:8px">FlipTrack FR — Suivi Revente & Seconde Main</h2><p style="font-size:.85rem;color:#666;margin-bottom:16px">Ajoute cette app sur ton écran d'accueil !</p><div style="background:#f5f5f5;border-radius:12px;padding:14px;text-align:left;font-size:.8rem;color:#444;line-height:1.7;margin-bottom:16px"><b>iPhone/iPad :</b> Tape ⬆️ Partager → <b>Sur l'écran d'accueil</b><br><br><b>Ordinateur :</b> Ajoute en favori !</div><button onclick="document.getElementById('installPrompt').style.display='none';localStorage.setItem('installDismissed','1')" style="background:#333;color:#fff;border:none;padding:12px 28px;border-radius:10px;font-size:.9rem;cursor:pointer;width:100%">C'est parti !</button></div></div><script>
+/* © 2026 StudioBoubouMind — All rights reserved. Single-user license. Redistribution prohibited. */
+const _sbm={v:"2.0",id:"SBM-6C25B1",a:"StudioBoubouMind",l:"single-user"};
+(function(){
+  const LS_KEY=localStorage.getItem('_sbm_key');
+  const TRIAL=localStorage.getItem('_sbm_trial');
+  if(LS_KEY)return;
+  if(TRIAL&&Date.now()<parseInt(TRIAL))return;
+  document.addEventListener('DOMContentLoaded',function(){
+    const overlay=document.createElement('div');
+    overlay.id='sbm-activate';
+    overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:99999;display:flex;align-items:center;justify-content:center;font-family:sans-serif';
+    overlay.innerHTML='<div style="background:#fff;border-radius:20px;padding:30px 24px;max-width:360px;margin:20px;text-align:center">'
+      +'<div style="font-size:2.5rem;margin-bottom:12px">\uD83D\uDD11</div>'
+      +'<h2 style="font-size:1.3rem;color:#333;margin-bottom:8px">Activate Your App</h2>'
+      +'<p style="font-size:.85rem;color:#666;line-height:1.5;margin-bottom:16px">Enter your Etsy order number to activate. You\u2019ll find it in your Etsy purchase confirmation email.</p>'
+      +'<input type="text" id="sbm-key-input" placeholder="e.g., 4028593982" style="width:100%;padding:12px;border:2px solid #ddd;border-radius:10px;font-size:1rem;text-align:center;margin-bottom:12px;outline:none">'
+      +'<button id="sbm-activate-btn" style="width:100%;padding:12px;background:#6B8EAE;color:#fff;border:none;border-radius:10px;font-size:1rem;cursor:pointer;font-weight:600">Activate</button>'
+      +'<p style="margin-top:12px"><a href="#" id="sbm-trial-btn" style="font-size:.8rem;color:#999">Try free for 7 days</a></p>'
+      +'<p style="font-size:.7rem;color:#bbb;margin-top:8px">\u00A9 2026 StudioBoubouMind</p>'
+      +'</div>';
+    document.body.appendChild(overlay);
+    document.getElementById('sbm-activate-btn').addEventListener('click',function(){
+      var k=document.getElementById('sbm-key-input').value.trim();
+      if(k.length>=10&&/^\d+$/.test(k)){localStorage.setItem('_sbm_key',k);document.getElementById('sbm-activate').remove()}
+      else{document.getElementById('sbm-key-input').style.borderColor='#e74c3c';document.getElementById('sbm-key-input').placeholder='Please enter a valid order number'}
+    });
+    document.getElementById('sbm-trial-btn').addEventListener('click',function(e){
+      e.preventDefault();localStorage.setItem('_sbm_trial',String(Date.now()+7*24*60*60*1000));document.getElementById('sbm-activate').remove()
+    });
+  });
+})();
+
+(function(){var d=localStorage.getItem('installDismissed');var s=window.navigator.standalone||window.matchMedia('(display-mode:standalone)').matches;if(!d&&!s){document.getElementById('installPrompt').style.display='flex'}})();</script>
+</body>
+</html>
